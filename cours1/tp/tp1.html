@@ -1,0 +1,1429 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<title>Algorithmes de résolution de requête</title>
+<!-- 2021-03-09 mar. 12:04 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="Org-mode">
+<meta name="author" content="Sylvain Salvati">
+
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<style>
+/* org mode styles on top of twbs */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    font-size: 18px;
+    margin-bottom: 105px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 101px;
+    background-color: #f5f5f5;
+}
+
+footer > div {
+    padding: 10px;
+}
+
+footer p {
+    margin: 0 0 5px;
+    text-align: center;
+    font-size: 16px;
+}
+
+#table-of-contents {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+blockquote p {
+    font-size: 18px;
+}
+
+pre {
+    font-size: 16px;
+}
+
+.footpara {
+    display: inline-block;
+}
+
+figcaption {
+  font-size: 16px;
+  color: #666;
+  font-style: italic;
+  padding-bottom: 15px;
+}
+
+/* from twbs docs */
+
+.bs-docs-sidebar.affix {
+    position: static;
+}
+@media (min-width: 768px) {
+    .bs-docs-sidebar {
+        padding-left: 20px;
+    }
+}
+
+/* All levels of nav */
+.bs-docs-sidebar .nav > li > a {
+    display: block;
+    padding: 4px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #999;
+}
+.bs-docs-sidebar .nav > li > a:hover,
+.bs-docs-sidebar .nav > li > a:focus {
+    padding-left: 19px;
+    color: #A1283B;
+    text-decoration: none;
+    background-color: transparent;
+    border-left: 1px solid #A1283B;
+}
+.bs-docs-sidebar .nav > .active > a,
+.bs-docs-sidebar .nav > .active:hover > a,
+.bs-docs-sidebar .nav > .active:focus > a {
+    padding-left: 18px;
+    font-weight: bold;
+    color: #A1283B;
+    background-color: transparent;
+    border-left: 2px solid #A1283B;
+}
+
+/* Nav: second level (shown on .active) */
+.bs-docs-sidebar .nav .nav {
+    display: none; /* Hide by default, but at >768px, show it */
+    padding-bottom: 10px;
+}
+.bs-docs-sidebar .nav .nav > li > a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 30px;
+    font-size: 12px;
+    font-weight: normal;
+}
+.bs-docs-sidebar .nav .nav > li > a:hover,
+.bs-docs-sidebar .nav .nav > li > a:focus {
+    padding-left: 29px;
+}
+.bs-docs-sidebar .nav .nav > .active > a,
+.bs-docs-sidebar .nav .nav > .active:hover > a,
+.bs-docs-sidebar .nav .nav > .active:focus > a {
+    padding-left: 28px;
+    font-weight: 500;
+}
+
+/* Nav: third level (shown on .active) */
+.bs-docs-sidebar .nav .nav .nav {
+    padding-bottom: 10px;
+}
+.bs-docs-sidebar .nav .nav .nav > li > a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 40px;
+    font-size: 12px;
+    font-weight: normal;
+}
+.bs-docs-sidebar .nav .nav .nav > li > a:hover,
+.bs-docs-sidebar .nav .nav .nav > li > a:focus {
+    padding-left: 39px;
+}
+.bs-docs-sidebar .nav .nav .nav > .active > a,
+.bs-docs-sidebar .nav .nav .nav > .active:hover > a,
+.bs-docs-sidebar .nav .nav .nav > .active:focus > a {
+    padding-left: 38px;
+    font-weight: 500;
+}
+
+.code-highlighted { background-color: #ffff00; }
+
+/* .verbatim { color: #3e9409;
+            background-color: #f5fbf4; }*/
+.verbatim {
+    color: #337ab7;
+    background-color: #d9edf7; }
+
+
+/* Show and affix the side nav when space allows it */
+@media (min-width: 992px) {
+    .bs-docs-sidebar .nav > .active > ul {
+        display: block;
+    }
+    /* Widen the fixed sidebar */
+    .bs-docs-sidebar.affix,
+    .bs-docs-sidebar.affix-bottom {
+        width: 213px;
+    }
+    .bs-docs-sidebar.affix {
+        position: fixed; /* Undo the static from mobile first approach */
+        top: 20px;
+    }
+    .bs-docs-sidebar.affix-bottom {
+        position: absolute; /* Undo the static from mobile first approach */
+    }
+    .bs-docs-sidebar.affix .bs-docs-sidenav,.bs-docs-sidebar.affix-bottom .bs-docs-sidenav {
+        margin-top: 0;
+        margin-bottom: 0
+    }
+}
+@media (min-width: 1200px) {
+    /* Widen the fixed sidebar again */
+    .bs-docs-sidebar.affix-bottom,
+    .bs-docs-sidebar.affix {
+        width: 263px;
+    }
+}
+</style>
+<style>body { margin-bottom: 0px; }</style><script>
+$(function() {
+    'use strict';
+
+    $('.bs-docs-sidebar li').first().addClass('active');
+
+    $(document.body).scrollspy({target: '.bs-docs-sidebar'});
+
+    $('.bs-docs-sidebar').affix();
+});
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+
+</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  displayAlign: "center",
+  displayIndent: "2em",
+  messageStyle: "none",
+  "HTML-CSS": {
+    scale: 100,
+    styles: {
+      ".MathJax_Display": {
+        "font-size": "100%"
+      }
+    }
+  },
+  "SVG": {
+    scale: 100,
+    styles: {
+      ".MathJax_SVG_Display": {
+        "font-size": "100%",
+        "margin-left": "-2.281em"
+      }
+    }
+  }
+});
+</script>
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_SVG"></script>
+</head>
+<body>
+<div id="content" class="container">
+<div class="row"><div class="col-md-3 col-md-push-9"><nav id="table-of-contents">
+<div id="text-table-of-contents" class="bs-docs-sidebar">
+<ul class="nav">
+<li><a href="#sec-1">1. Objectifs</a></li>
+<li><a href="#sec-2">2. Concept préalable : les flux</a>
+<ul class="nav">
+<li><a href="#sec-2-1">2.1. Le principe</a></li>
+<li><a href="#sec-2-2">2.2. Les flux en <code class="verbatim">python</code></a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. Implémentation des opérateurs de l'algèbre relationnelle</a>
+<ul class="nav">
+<li><a href="#sec-3-1">3.1. Projection, concaténation (union), sélection</a></li>
+<li><a href="#sec-3-2">3.2. Les algorithmes de jointure</a></li>
+<li><a href="#sec-3-3">3.3. L'agrégation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav>
+</div><div class="col-md-9 col-md-pull-3"><h1 class="title">Algorithmes de résolution de requête</h1>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Objectifs</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Ce TP vous propose d'explorer les algorithmes utilisés par les systèmes de
+bases de données pour répondre aux requêtes qui leur sont envoyées. Cette
+exploration s'effectue dans un cadre simplifié :
+</p>
+<ol class="org-ol">
+<li>nous n'irons pas jusqu'aux détails de la gestion de la mémoire faite par ces
+algorithmes,
+</li>
+<li>nous oublierons les subtilités de la gestion des accès disque,
+</li>
+<li>enfin, nous ne verrons pas comment utiliser le disque dur pour stocker des
+résultats intermédiaires de requête trop volumineux pour tenir en mémoire.
+</li>
+</ol>
+
+<p>
+Néanmoins, nous nous efforcerons au cours du TP d'évoquer ces détails afin de
+comprendre les difficultés techniques qu'ils soulèvent.
+</p>
+
+<p>
+Le TP s'effectuera en python.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Concept préalable : les flux</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Le principe</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+La résolution d'une requête dans une base de données requiert la combinaison
+de nombreuses opérations. Il s'agit :
+</p>
+<ul class="org-ul">
+<li>de lire les tables sur le disque,
+</li>
+<li>de supprimer les colonnes inutiles,
+</li>
+<li>de filtrer les lignes inutiles,
+</li>
+<li>de calculer des jointures,
+</li>
+<li>de calculer des agrégats
+</li>
+<li>etc.
+</li>
+</ul>
+
+
+<p>
+Pour faire en sorte que ces calculs n'utilisent pas toute la mémoire de la
+machine, ceux-ci sont organisés en flux : les opérations produisent des
+résultats qui sont consommés au fur et à mesure par d'autres opérations.
+Cela évite ainsi de stocker l'intégralité des tables en mémoire. D'ailleurs,
+il est en général impossible de stocker en mémoire vive l'intégralité d'une
+table d'une bases données de taille industrielle.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Les flux en <code class="verbatim">python</code></h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+<code class="verbatim">Python</code> permet assez naturellement de manipuler des flux. Pour cela, il
+suffit d'utiliser dans une fonction le mot clé <code>yield</code>. Par exemple le code
+suivant génère le flux des carrés des nombres de <code>0</code> à <code>n-1</code>:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">flux_carres</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Flux des carr&#233;s de 0 &#224; n-1"""</span>
+    <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+<span id="coderef-yield-carre" class="coderef-off">        <span style="color: #0000FF;">yield</span> i*i</span>
+</pre>
+</div>
+<p>
+Dans ce programme, <a href="#coderef-yield-carre"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-yield-carre');" onmouseout="CodeHighlightOff(this, 'coderef-yield-carre');">la ligne commençant par <code>yield</code></a> renvoie
+le carré courant et le calcul est suspendu jusqu'à une nouvelle demande. Les
+fonctions de ce type s'appellent <b>générateurs</b> (<b>generators</b> en anglais) en
+<code class="verbatim">python</code> et peuvent être utilisés dans des boucles.
+Par exemple, exécutez le code suivant et observez ce qu'il produit :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">carres</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+  <span style="color: #BA36A5;">res</span> = <span style="color: #707183;">[]</span>
+  <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+    <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span><span style="color: #008000;">"foo"</span><span style="color: #707183;">)</span>
+    res.append<span style="color: #707183;">(</span>i*i<span style="color: #707183;">)</span>
+  <span style="color: #0000FF;">return</span> res
+
+<span style="color: #0000FF;">def</span> <span style="color: #006699;">flux_carres_bis</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+  <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+    <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span><span style="color: #008000;">"bar"</span><span style="color: #707183;">)</span>
+    <span style="color: #0000FF;">yield</span> i*i
+
+<span style="color: #0000FF;">for</span> c <span style="color: #0000FF;">in</span> carres<span style="color: #707183;">(</span><span style="color: #D0372D;">10</span><span style="color: #707183;">)</span>:
+  <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>c<span style="color: #707183;">)</span>
+
+<span style="color: #0000FF;">for</span> c <span style="color: #0000FF;">in</span> flux_carres_bis<span style="color: #707183;">(</span><span style="color: #D0372D;">10</span><span style="color: #707183;">)</span>:
+  <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>c<span style="color: #707183;">)</span>
+</pre>
+</div>
+
+
+
+<p>
+Ainsi nous pouvons écrire une fonction qui calcule la somme des carrés de
+<code>0</code> à <code>n-1</code> de la manière suivante en nous servant de notre générateur
+<code>flux_carres</code>:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">somme_carres</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Calcule la somme des carr&#233;s de 0 &#224; n-1."""</span>
+    <span style="color: #BA36A5;">res</span> = <span style="color: #D0372D;">0</span>
+    <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> flux_carres<span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+        <span style="color: #BA36A5;">res</span> += i
+    <span style="color: #0000FF;">return</span> res
+</pre>
+</div>
+<p>
+L'avantage de cette approche est double : d'une part, elle évite de
+consommer trop de mémoire (en ne stockant pas en mémoire la liste des carrés),
+et d'autre part elle évite de devoir attendre que tous les carrés soient
+générés avant pouvoir les utiliser. En écrivant la fonction <code>somme_carres</code> de la
+manière suivante:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">somme_carres_bis</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+    <span style="color: #0000FF;">return</span> <span style="color: #006FE0;">sum</span><span style="color: #707183;">(</span><span style="color: #7388D6;">[</span>i*i <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #909183;">(</span>n<span style="color: #909183;">)</span><span style="color: #7388D6;">]</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+<p>
+la liste de tous les carrés entre <code>0</code> et <code>n-1</code> va être générée et stockée en
+mémoire, ce qui peut être problématique pour les grandes valeurs de <code>n</code>. À
+l'inverse l'utilisation du générateur <code>flux_carres</code> évite ce problème et
+<code>somme_carres</code> a une faible empreinte mémoire.
+</p>
+
+
+<p>
+Les générateurs peuvent être écrits et composés de façon très
+similaire aux listes en compréhension. Il suffit pour cela de remplacer les
+crochets <code>[</code> <code>]</code> par des parenthèses <code>(</code> <code>)</code>. Nous pouvons réécrire la
+fonction <code>somme_carres</code> avec un générateur de la manière suivante (même si
+cela peut sembler artificiel) :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">somme_carres_ter</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+    <span style="color: #BA36A5;">res</span> = <span style="color: #D0372D;">0</span>
+    <span style="color: #0000FF;">for</span> k <span style="color: #0000FF;">in</span> <span style="color: #707183;">(</span>i*i <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #7388D6;">(</span>n<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>:
+        <span style="color: #BA36A5;">res</span>+=k
+    <span style="color: #0000FF;">return</span> k
+</pre>
+</div>
+<p>
+La fonction <code>sum</code> utilise à son avantage les générateurs et permet de sommer
+sans empreinte mémoire. Nous pouvons ainsi écrire <code>somme_carres</code> comme ceci :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">somme_carres_quad</span><span style="color: #707183;">(</span>n<span style="color: #707183;">)</span>:
+    <span style="color: #0000FF;">return</span> <span style="color: #006FE0;">sum</span><span style="color: #707183;">(</span>i*i <span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #7388D6;">(</span>n<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+<p>
+Tout comme pour les listes en compréhension, les générateurs peuvent être
+composés, utiliser des filtres, etc.
+</p>
+
+<p>
+Nous essaierons autant que possible de faire en sorte que les algorithmes de
+résolutions de requête que nous implémenterons soient des générateurs.
+</p>
+
+<p>
+Vous pourrez trouver plus de détails sur les générateurs sur le
+<a href="https://wiki.python.org/moin/Generators">wiki de <code class="verbatim">python</code></a>.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Implémentation des opérateurs de l'algèbre relationnelle</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Nous allons représenter les tables comme des flux de dictionnaires. Les
+dictionnaires représenteront les tuples de la table :
+</p>
+<ul class="org-ul">
+<li>chaque clé du dictionnaire représente un attribut de la table,
+</li>
+<li>la valeur associée à la clé dans un dictionnaire représente la valeur qui est
+stockée par cet attribut dans le tuple. En général, nous nous contenterons de
+valeurs entières pour ce TP.
+</li>
+</ul>
+
+
+<p>
+Afin de simuler des tables de tailles variées, nous allons les générer
+aléatoirement à l'aide de la fonction suivante :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">table</span><span style="color: #707183;">(</span>descr, nb=<span style="color: #D0372D;">10000</span><span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Cette fonction g&#233;n&#232;re une s&#233;quence de tuples d&#233;crits par le dictionnaire</span>
+<span style="color: #036A07;">    descr. Le dictionnaire associe &#224; une cl&#233; une paire (k,l). La fonction</span>
+<span style="color: #036A07;">    g&#233;n&#232;re nb dictionnaires de la mani&#232;re suivante :</span>
+<span style="color: #036A07;">    - chaque cl&#233; de descr est une cl&#233; de ces dictionnaires</span>
+<span style="color: #036A07;">    - &#224; chacune de ces cl&#233;s x, ces dictionnaires associent un nombre tir&#233; au hasard</span>
+<span style="color: #036A07;">      entre k et l lorsque la paire (k,l) est associ&#233;e &#224; x dans descr.</span>
+<span style="color: #036A07;">    NB : cette fonction requiert d'importer le module random.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">for</span> _ <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #707183;">(</span>nb<span style="color: #707183;">)</span>:
+        <span style="color: #BA36A5;">tuple_res</span> = <span style="color: #707183;">{}</span>
+        <span style="color: #0000FF;">for</span> a, <span style="color: #707183;">(</span>k,l<span style="color: #707183;">)</span> <span style="color: #0000FF;">in</span> descr.items<span style="color: #707183;">()</span>:
+            <span style="color: #BA36A5;">tuple_res</span><span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> = random.randint<span style="color: #707183;">(</span><span style="color: #006FE0;">min</span><span style="color: #7388D6;">(</span>k, l<span style="color: #7388D6;">)</span>, <span style="color: #006FE0;">max</span><span style="color: #7388D6;">(</span>k, l<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+        <span style="color: #0000FF;">yield</span> tuple_res
+</pre>
+</div>
+
+
+<p>
+Voici un exemple d'utilisation de cette fonction qui affiche tous les tuples
+générés (ici on choisit de générer une table qui ne contient que 10 éléments) :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">exemple_table</span><span style="color: #707183;">()</span>:
+    <span style="color: #036A07;">"""Exemple d'utilisation de la fonction table. G&#233;n&#232;re une table de 10 &#233;l&#233;ments</span>
+<span style="color: #036A07;">comportant les attributs 'a' et 'b' et les affiche en flux."""</span>
+    <span style="color: #BA36A5;">schema</span> = <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">0</span>,<span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'b'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">100</span>,<span style="color: #D0372D;">100000</span><span style="color: #7388D6;">)</span><span style="color: #707183;">}</span>
+    <span style="color: #0000FF;">for</span> tuple_tbl <span style="color: #0000FF;">in</span> table<span style="color: #707183;">(</span>schema,nb=<span style="color: #D0372D;">10</span><span style="color: #707183;">)</span>:
+        <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>tuple_tbl<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Projection, concaténation (union), sélection</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Nous allons maintenant implémenter les opérations les plus simples de
+l'algèbre relationnelle. Pour ces opérations, il faut garder à l'esprit que
+l'on souhaite autant que possible maintenir ces opérations en flux, dans le but
+d'éviter de mémoriser les tuples traités.
+</p>
+</div>
+
+
+<div id="outline-container-sec-3-1-1" class="outline-4">
+<h4 id="sec-3-1-1"><span class="section-number-4">3.1.1</span> La projection</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<p>
+Nous allons commencer par la projection. Il s'agit, étant données une table et
+une liste d'attributs, de renvoyer une table (sous forme de flux) qui ne
+contient que les attributs présents dans la liste d'attributs.
+</p>
+
+<p>
+Cela correspond aux requêtes <code class="verbatim">sql</code> de la forme suivante :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> id, nom <span style="color: #0000FF;">FROM</span> etudiants;
+</pre>
+</div>
+<p>
+où on ne sélectionne qu'une partie des attributs d'une table.
+</p>
+
+<p>
+Vous compléterez la fonction ci-dessous :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">projection</span><span style="color: #707183;">(</span>table, champs<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""</span>
+<span style="color: #036A07;">    Renvoie la table (sous forme de flux) obtenue &#224; partir des tuples contenus</span>
+<span style="color: #036A07;">    dans ~table~ en n'y conservant que les attributs (les cl&#233;s) qui sont</span>
+<span style="color: #036A07;">    contenus dans ~champs~.</span>
+
+<span style="color: #036A07;">    Renvoie une exception si un attribut de ~champs~ n'est pas un attribut des</span>
+<span style="color: #036A07;">    tuples de ~table~.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+
+<p>
+Voici un exemple d'utilisation de cette fonction :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">exemple_projection</span><span style="color: #707183;">()</span>:
+    <span style="color: #036A07;">"""Exemple d'utilisation de la projection."""</span>
+    <span style="color: #BA36A5;">schema</span> = <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">1</span>, <span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'b'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">40</span>, <span style="color: #D0372D;">100</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'c'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">20</span>,<span style="color: #D0372D;">30</span><span style="color: #7388D6;">)</span><span style="color: #707183;">}</span>
+    <span style="color: #0000FF;">for</span> tuple_res <span style="color: #0000FF;">in</span> projection<span style="color: #707183;">(</span>table<span style="color: #7388D6;">(</span>schema ,nb=<span style="color: #D0372D;">100</span><span style="color: #7388D6;">)</span>,
+                                <span style="color: #7388D6;">[</span><span style="color: #008000;">'a'</span>, <span style="color: #008000;">'c'</span><span style="color: #7388D6;">]</span><span style="color: #707183;">)</span>:
+        <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>tuple_res<span style="color: #707183;">)</span>
+</pre>
+</div>
+
+
+<p>
+Un point de vue plus général sur la projection consiste à la voir comme
+l'application d'une fonction à chacun des tuples de la table. Par exemple,
+la requête suivante effectue une telle transformation :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> id, <span style="color: #707183;">(</span>note1 + note2<span style="color: #707183;">)</span>/<span style="color: #D0372D;">2</span> <span style="color: #0000FF;">AS</span> moyenne <span style="color: #0000FF;">FROM</span> etudiants;
+</pre>
+</div>
+
+<p>
+Pour implémenter ce type d'opération, complétez cette fonction (vous pouvez
+penser à utiliser la définition des flux en extension) :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">transformation</span><span style="color: #707183;">(</span>table, f<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie un flux obtenu en appliquant ~f~ &#224; chacun des tuples composant</span>
+<span style="color: #036A07;">~table~."""</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+
+<p>
+Voici un exemple d'utilisation de cette fonction :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">exemple_transformation</span><span style="color: #707183;">()</span>:
+    <span style="color: #BA36A5;">schema</span> = <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">1</span>, <span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'b'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">40</span>, <span style="color: #D0372D;">100</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'c'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">20</span>,<span style="color: #D0372D;">30</span><span style="color: #7388D6;">)</span><span style="color: #707183;">}</span>
+    <span style="color: #BA36A5;">f</span> = <span style="color: #0000FF;">lambda</span> tp: <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span>: tp<span style="color: #7388D6;">[</span><span style="color: #008000;">'a'</span><span style="color: #7388D6;">]</span>, <span style="color: #008000;">'m'</span>: <span style="color: #7388D6;">(</span>tp<span style="color: #909183;">[</span><span style="color: #008000;">'b'</span><span style="color: #909183;">]</span>+tp<span style="color: #909183;">[</span><span style="color: #008000;">'c'</span><span style="color: #909183;">]</span><span style="color: #7388D6;">)</span>//<span style="color: #D0372D;">2</span><span style="color: #707183;">}</span>
+    <span style="color: #0000FF;">for</span> tuple_res <span style="color: #0000FF;">in</span> transformation<span style="color: #707183;">(</span>table<span style="color: #7388D6;">(</span>schema,nb=<span style="color: #D0372D;">100</span><span style="color: #7388D6;">)</span>, f<span style="color: #707183;">)</span>:
+        <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>tuple_res<span style="color: #707183;">)</span>
+</pre>
+</div>
+
+<p>
+Réécrire la fonction <code>projection</code> à l'aide de la fonction <code>transformation</code>
+(penser à utiliser une définition de fonction dans la fonction,
+<a href="https://realpython.com/inner-functions-what-are-they-good-for/">voir ici par exemple</a>):
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">projection2</span><span style="color: #707183;">(</span>table, champs<span style="color: #707183;">)</span>:
+
+    <span style="color: #036A07;">"""</span>
+<span style="color: #036A07;">    Renvoie la table (sous forme de flux) obtenue &#224; partir des tuples contenus</span>
+<span style="color: #036A07;">    dans ~table~ en n'y conservant que les attributs (les cl&#233;s) qui sont</span>
+<span style="color: #036A07;">    contenus dans ~champs~.</span>
+
+<span style="color: #036A07;">    Renvoie une erreur si un attribut de ~champs~ n'est pas un attribut des</span>
+<span style="color: #036A07;">    tuples de ~table~.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-3-1-2" class="outline-4">
+<h4 id="sec-3-1-2"><span class="section-number-4">3.1.2</span> L'union</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<p>
+Une opération relativement simple est l'union de deux tables. Il s'agit de
+construire un flux de données (de tuples) en énumérant les données d'un
+premier flux, puis, lorsque ce premier flux est épuisé, d'énumérer le
+second.
+L'opérateur équivalent en SQL s'appelle UNION ALL, alors que l'opérateur UNION enlève les doublons.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> * <span style="color: #0000FF;">FROM</span> table1 <span style="color: #0000FF;">UNION</span> <span style="color: #0000FF;">ALL</span> <span style="color: #0000FF;">SELECT</span> * <span style="color: #0000FF;">FROM</span> table2 ;
+</pre>
+</div>
+
+<p>
+Complétez la fonction suivante :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">union</span><span style="color: #707183;">(</span>t1, t2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Construit un flux qui &#233;num&#232;re les &#233;l&#233;ments de ~t1~ puis ceux de ~t2~."""</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+
+<p>
+Un exemple d'utilisation de cette fonction:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">exemple_union</span><span style="color: #707183;">()</span>:
+    <span style="color: #036A07;">"""Exemple d'utilisation de la fonction union."""</span>
+    <span style="color: #BA36A5;">schema1</span> = <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span>:<span style="color: #7388D6;">(</span><span style="color: #D0372D;">30</span>, <span style="color: #D0372D;">100</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'b'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">10</span>, <span style="color: #D0372D;">50</span><span style="color: #7388D6;">)</span><span style="color: #707183;">}</span>
+    <span style="color: #BA36A5;">schema2</span> = <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">40</span>, <span style="color: #D0372D;">50</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'n'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">100</span>, <span style="color: #D0372D;">200</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'m'</span>: <span style="color: #7388D6;">(</span><span style="color: #D0372D;">0</span>,<span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span><span style="color: #707183;">}</span>
+    <span style="color: #BA36A5;">f</span> = <span style="color: #0000FF;">lambda</span> tp: <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span>: tp<span style="color: #7388D6;">[</span><span style="color: #008000;">'a'</span><span style="color: #7388D6;">]</span>//<span style="color: #D0372D;">2</span>, <span style="color: #008000;">'b'</span>: <span style="color: #7388D6;">(</span>tp<span style="color: #909183;">[</span><span style="color: #008000;">'m'</span><span style="color: #909183;">]</span>*tp<span style="color: #909183;">[</span><span style="color: #008000;">'m'</span><span style="color: #909183;">]</span><span style="color: #7388D6;">)</span>//<span style="color: #D0372D;">4</span><span style="color: #707183;">}</span>
+    <span style="color: #0000FF;">for</span> tp <span style="color: #0000FF;">in</span> union<span style="color: #707183;">(</span>table<span style="color: #7388D6;">(</span>schema1, nb = <span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span>,
+                    transformation<span style="color: #7388D6;">(</span>table<span style="color: #909183;">(</span>schema2,nb=<span style="color: #D0372D;">10</span><span style="color: #909183;">)</span>,f<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>:
+        <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>tp<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3-1-3" class="outline-4">
+<h4 id="sec-3-1-3"><span class="section-number-4">3.1.3</span> La sélection</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<p>
+L'opération de sélection consiste à ne conserver dans un flux que les
+éléments qui vérifient une certaine propriété.
+</p>
+
+<p>
+Typiquement, c'est l'opération réalisée par ce type de requêtes :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> * <span style="color: #0000FF;">FROM</span> etudiants <span style="color: #0000FF;">WHERE</span> date_inscription &lt;= <span style="color: #D0372D;">2020</span> <span style="color: #0000FF;">AND</span> date_inscription &gt;= <span style="color: #D0372D;">2018</span>;
+</pre>
+</div>
+
+<p>
+Nous allons implémenter la sélection par un prédicat, c'est-à-dire une
+fonction qui à un tuple associe un booléen. Pour cela, complétez la définition
+suivante :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">selection</span><span style="color: #707183;">(</span>table, pred<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Construit le flux des &#233;l&#233;ments de ~table~ qui satisfont le pr&#233;dicat</span>
+<span style="color: #036A07;">       ~pred~ (fonction des tuples dans les bool&#233;ens)."""</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+
+<p>
+Exemple d'utilisation de <code>selection</code> :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">exemple_selection</span><span style="color: #707183;">()</span>:
+    <span style="color: #0000FF;">for</span> un_tuple <span style="color: #0000FF;">in</span> selection<span style="color: #707183;">(</span>table<span style="color: #7388D6;">(</span><span style="color: #909183;">{</span><span style="color: #008000;">'a'</span>: <span style="color: #709870;">(</span><span style="color: #D0372D;">30</span>, <span style="color: #D0372D;">100</span><span style="color: #709870;">)</span>, <span style="color: #008000;">'b'</span>: <span style="color: #709870;">(</span><span style="color: #D0372D;">10</span>, <span style="color: #D0372D;">50</span><span style="color: #709870;">)</span><span style="color: #909183;">}</span>, nb=<span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span>,
+               <span style="color: #0000FF;">lambda</span> tp: tp<span style="color: #7388D6;">[</span><span style="color: #008000;">'a'</span><span style="color: #7388D6;">]</span> &gt; <span style="color: #D0372D;">50</span> <span style="color: #0000FF;">and</span> tp<span style="color: #7388D6;">[</span><span style="color: #008000;">'b'</span><span style="color: #7388D6;">]</span> &lt; <span style="color: #D0372D;">45</span><span style="color: #707183;">)</span>:
+        <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>un_tuple<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3-1-4" class="outline-4">
+<h4 id="sec-3-1-4"><span class="section-number-4">3.1.4</span> La sélection en présence d'index</h4>
+<div class="outline-text-4" id="text-3-1-4">
+<p>
+Lorsqu'une table est très grande, par exemple lorsqu'elle contient plus de
+10<sup>9</sup> tuples, la parcourir intégralement a un coût très important. Si le
+nombre de tuples sélectionnés par une requête est faible par rapport au
+nombre total de tuples de la table, on utilise un <b>index</b> pour les
+retrouver directement.
+</p>
+
+<p>
+Afin de simuler les index, nous vous fournissons un ensemble de fonctions
+qui permettent de sauver les tables sur le disque, puis de créer un index de
+ces tables en mémoire. Cet index va associer à chaque valeur indexée
+la liste des adresses physiques sur le disque des tuples dont le
+champ indexé contient cette valeur. Ainsi pour une valeur donnée, on pourra récupérer
+ces tuples sans devoir lire toute la table sur le disque.
+</p>
+</div>
+
+<ol class="org-ol"><li><a id="sec-3-1-4-1" name="sec-3-1-4-1"></a>Quelques fonctions pour créer et utiliser des tables sur disque<br ><div class="outline-text-5" id="text-3-1-4-1">
+<p>
+Les fonctions utiles pour le TP sont les suivantes (elles se trouvent dans
+le module <code>disque</code>) :
+</p>
+<ul class="org-ul">
+<li><code>mem_sur_disque(table, fichier)</code> : sauvegarde <code>table</code> dans <code>fichier</code>,
+</li>
+<li><code>lire_sur_fichier(fichier)</code> : renvoie le flux des tuples de la table
+contenue dans <code>fichier</code>,
+</li>
+
+<li><code>index_fichier(fichier, attribut)</code> : renvoie un dictionnaire qui à chaque
+valeur <code>v</code> associe la liste des adresses dans <code>fichier</code> des tuples
+associant <code>v</code> à <code>attribut</code>.
+</li>
+
+<li><code>trouver_sur_disque(fichier, adresses)</code> : renvoie le flux des tuples dans <code>fichier</code>
+ayant des adresses physiques dans <code>adresses</code>.
+</li>
+</ul>
+
+
+<p>
+Typiquement nous utiliserons ces fonctions de la manière suivante :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span id="coderef-ex_schema" class="coderef-off"><span style="color: #BA36A5;">schema</span> = <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span> : <span style="color: #7388D6;">(</span><span style="color: #D0372D;">0</span>,<span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'b'</span> : <span style="color: #7388D6;">(</span><span style="color: #D0372D;">1</span>,<span style="color: #D0372D;">10000000</span><span style="color: #7388D6;">)</span><span style="color: #707183;">}</span></span>
+<span id="coderef-ex_table" class="coderef-off"><span style="color: #BA36A5;">tbl</span> = table<span style="color: #707183;">(</span>schema, nb=<span style="color: #D0372D;">1000000</span><span style="color: #707183;">)</span></span>
+<span id="coderef-ex_fichier" class="coderef-off"><span style="color: #BA36A5;">fichier</span> = <span style="color: #008000;">"/tmp/tbl.table"</span></span>
+<span id="coderef-ex_sur_disque" class="coderef-off">mem_sur_disque<span style="color: #707183;">(</span>tbl, fichier<span style="color: #707183;">)</span></span>
+<span id="coderef-ex_index_a" class="coderef-off"><span style="color: #BA36A5;">idx</span> = index_fichier<span style="color: #707183;">(</span>fichier, <span style="color: #008000;">'a'</span><span style="color: #707183;">)</span></span>
+<span id="coderef-ex_a_0" class="coderef-off"><span style="color: #BA36A5;">b0</span> = trouve_sur_disque<span style="color: #707183;">(</span><span style="color: #008000;">"/tmp/tbl.table"</span>,idx<span style="color: #7388D6;">[</span><span style="color: #D0372D;">0</span><span style="color: #7388D6;">]</span><span style="color: #707183;">)</span></span>
+<span id="coderef-ex_somme" class="coderef-off"><span style="color: #0000FF;">print</span><span style="color: #707183;">(</span><span style="color: #006FE0;">sum</span><span style="color: #7388D6;">(</span>t<span style="color: #909183;">[</span><span style="color: #008000;">'b'</span><span style="color: #909183;">]</span> <span style="color: #0000FF;">for</span> t <span style="color: #0000FF;">in</span> b0<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span></span>
+</pre>
+</div>
+<ul class="org-ul">
+<li><a href="#coderef-ex_schema"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-ex_schema');" onmouseout="CodeHighlightOff(this, 'coderef-ex_schema');">On commence par définir la forme des tuples</a>
+</li>
+<li><a href="#coderef-ex_table"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-ex_table');" onmouseout="CodeHighlightOff(this, 'coderef-ex_table');">On produit le flux de la table</a>
+</li>
+<li><a href="#coderef-ex_fichier"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-ex_fichier');" onmouseout="CodeHighlightOff(this, 'coderef-ex_fichier');">On choisit le fichier où nous allons sauvegarder les données</a>
+</li>
+<li><a href="#coderef-ex_sur_disque"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-ex_sur_disque');" onmouseout="CodeHighlightOff(this, 'coderef-ex_sur_disque');">On enregistre la table sur disque dans le fichier</a>
+</li>
+<li><a href="#coderef-ex_index_a"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-ex_index_a');" onmouseout="CodeHighlightOff(this, 'coderef-ex_index_a');">On crée un index des tuples du fichier pour l'attribut <code>'a'</code></a>
+</li>
+<li><a href="#coderef-ex_a_0"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-ex_a_0');" onmouseout="CodeHighlightOff(this, 'coderef-ex_a_0');">On crée le flux des tuples de la table pour lesquels <code>'a'</code> a pour valeur <code>0</code> à l'aide de l'index</a>
+</li>
+<li><a href="#coderef-ex_somme"class="coderef" onmouseover="CodeHighlightOn(this, 'coderef-ex_somme');" onmouseout="CodeHighlightOff(this, 'coderef-ex_somme');">On imprime la somme des valeurs de l'attribut <code>'b'</code> des tuples sélectionnés</a>
+</li>
+</ul>
+</div>
+</li>
+
+
+
+<li><a id="sec-3-1-4-2" name="sec-3-1-4-2"></a>Calcul d'une sélection à partir d'un index<br ><div class="outline-text-5" id="text-3-1-4-2">
+<p>
+Vous allez maintenant écrire la fonction <code>selection_index(fichier, idx, valeurs)</code>
+suivante :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">selection_index</span><span style="color: #707183;">(</span>fichier, idx, valeurs<span style="color: #707183;">)</span> :
+    <span style="color: #036A07;">"""</span>
+<span style="color: #036A07;">    On suppose que ~fichier~ contient des tuples dont l'une des colonnes est</span>
+<span style="color: #036A07;">    index&#233;e par ~idx~. La fonction renvoie le flux des tuples qui associe a la</span>
+<span style="color: #036A07;">    colonne index&#233;e une valeur dans la s&#233;quence ~valeurs~.</span>
+
+<span style="color: #036A07;">    Attention : si un &#233;l&#233;ment de ~valeurs~ n'est pas r&#233;f&#233;renc&#233; dans ~idx~, on</span>
+<span style="color: #036A07;">    souhaite qu'il n'y ait pas d'erreur.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+
+<p>
+Voici un exemple d'utilisation de cette fonction où on sélectionne dans une
+table (générée pour l'occasion et indexée suivant l'attribut <code>a</code>) les tuples
+qui associent une valeur entre 2 et 4 à l'attribut <code>a</code> :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">exemple_selection_index</span><span style="color: #707183;">()</span>:
+    <span style="color: #BA36A5;">schema</span> = <span style="color: #707183;">{</span><span style="color: #008000;">'a'</span> : <span style="color: #7388D6;">(</span><span style="color: #D0372D;">0</span>,<span style="color: #D0372D;">10</span><span style="color: #7388D6;">)</span>, <span style="color: #008000;">'b'</span> : <span style="color: #7388D6;">(</span><span style="color: #D0372D;">1</span>,<span style="color: #D0372D;">10000000</span><span style="color: #7388D6;">)</span><span style="color: #707183;">}</span>
+    <span style="color: #BA36A5;">tbl</span> = table<span style="color: #707183;">(</span>schema, nb=<span style="color: #D0372D;">1000000</span><span style="color: #707183;">)</span>
+    <span style="color: #BA36A5;">fichier</span> = <span style="color: #008000;">"/tmp/tbl.table"</span>
+    mem_sur_disque<span style="color: #707183;">(</span>tbl, fichier<span style="color: #707183;">)</span>
+    <span style="color: #BA36A5;">idx</span> = index_fichier<span style="color: #707183;">(</span>fichier, <span style="color: #008000;">'a'</span><span style="color: #707183;">)</span>
+    <span style="color: #0000FF;">for</span> tp <span style="color: #0000FF;">in</span> selection_index<span style="color: #707183;">(</span>fichier, idx, <span style="color: #006FE0;">range</span><span style="color: #7388D6;">(</span><span style="color: #D0372D;">2</span>,<span style="color: #D0372D;">5</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>:
+        <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>tp<span style="color: #707183;">)</span>
+
+</pre>
+</div>
+</div>
+</li></ol>
+</div>
+</div>
+
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Les algorithmes de jointure</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Nous allons maintenant voir plusieurs algorithmes de calcul de jointure.
+Il s'agit de l'une des opérations les plus coûteuses lors de la résolution de
+requête pour un système de bases de données. Ainsi, il y a un grand nombre
+d'algorithmes qui cherchent à tirer partie de propriétés particulières des
+tables à joindre pour gagner en efficacité.
+</p>
+</div>
+
+<div id="outline-container-sec-3-2-1" class="outline-4">
+<h4 id="sec-3-2-1"><span class="section-number-4">3.2.1</span> Produit cartésien</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<p>
+Avant de calculer la jointure entre deux tables, nous allons nous occuper
+d'une opération plus élémentaire : le calcul du produit cartésien de deux
+tables. Le produit cartésien est calculé par les requêtes sql suivantes :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> * <span style="color: #0000FF;">FROM</span> table1 <span style="color: #0000FF;">CROSS</span> <span style="color: #0000FF;">JOIN</span> table2;
+</pre>
+</div>
+<p>
+ou encore
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> * <span style="color: #0000FF;">FROM</span> table1, table2;
+</pre>
+</div>
+
+<p>
+Cependant avant même d'implémenter le produit cartésien, comme nous ne
+souhaitons manipuler que des tuples, nous allons écrire une fonction
+permettant d'assembler deux tuples en un seul.
+</p>
+</div>
+
+<ol class="org-ol"><li><a id="sec-3-2-1-1" name="sec-3-2-1-1"></a>Appariement de tuples<br ><div class="outline-text-5" id="text-3-2-1-1">
+<p>
+Nous allons tout d'abord voir comment nous allons réaliser l'<i>appariement</i>
+de deux tuples. Idéalement nous souhaiterions que cet appariement consiste
+à faire l'union des dictionnaires : chaque clé de l'un des dictionnaires
+est dans le dictionnaire résultat et celui-ci associe à la clé la valeur
+qui lui est associée par l'un des tuples de départ. Si les deux tuples
+n'ont aucun attribut en commun, alors il n'y a pas de difficulté. Dans le
+cas contraire, nous décidons (un peu arbitrairement) de donner la priorité
+au second tuple : nous allons associer, dans le résultat, les valeurs du
+second tuple aux clés communes aux deux tuples.
+</p>
+
+<p>
+Complétez la fonction ci-dessous.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">appariement</span><span style="color: #707183;">(</span>t1, t2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie un tuple ayant pour cl&#233; les cl&#233;s de ~t1~ et de ~t2~.</span>
+
+<span style="color: #036A07;">    Lorsqu'une cl&#233; n'appara&#238;t que dans un tuple la valeur que lui associe ce</span>
+<span style="color: #036A07;">    tuple est celle associ&#233;e &#224; la cl&#233; dans le r&#233;sultat.</span>
+
+<span style="color: #036A07;">    &#192; une cl&#233; qui appara&#238;t dans les deux tuples, le r&#233;sultat associe la valeur</span>
+<span style="color: #036A07;">    que lui associe ~t2~.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">return</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</li>
+
+<li><a id="sec-3-2-1-2" name="sec-3-2-1-2"></a>L'algorithme de double boucle<br ><div class="outline-text-5" id="text-3-2-1-2">
+<p>
+Pour générer le produit cartésien nous allons utiliser un algorithme qui
+utilise deux boucles imbriquées :
+</p>
+<ol class="org-ol">
+<li>Une boucle parcourt la première table en sélectionant un tuple <code>tp</code> à chaque
+tour.
+</li>
+<li>La seconde boucle, à l'intérieur de la première, parcourt la seconde
+table et renvoie le flux des tuples de cette table, appariés avec <code>tp</code>.
+</li>
+</ol>
+
+<p>
+Écrivez cet algorithme dans le squelette de code suivant :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">produit_cartesien</span><span style="color: #707183;">(</span>table1, table2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Construit le flux de tuples obtenus en appariant tous les tuples de</span>
+<span style="color: #036A07;">    ~table1~ et de ~table2~.</span>
+
+<span style="color: #036A07;">    Ce flux correspond au produit cart&#233;sien des deux tables produit par l'algorithme double boucle :</span>
+<span style="color: #036A07;">    - ~table1~ est la table utilis&#233;e dans le boucle ext&#233;rieure,</span>
+<span style="color: #036A07;">    - ~table2~ est la table utilis&#233;e dans la boucle int&#233;rieure.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</li>
+
+<li><a id="sec-3-2-1-3" name="sec-3-2-1-3"></a>Un problème avec les flux en mémoire<br ><div class="outline-text-5" id="text-3-2-1-3">
+<p>
+Exécutez le bloc de code suivant :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #BA36A5;">tb1</span> = table<span style="color: #707183;">(</span><span style="color: #7388D6;">{</span><span style="color: #008000;">'a'</span>: <span style="color: #909183;">(</span><span style="color: #D0372D;">1</span>,<span style="color: #D0372D;">1</span><span style="color: #909183;">)</span><span style="color: #7388D6;">}</span>, nb=<span style="color: #D0372D;">2</span><span style="color: #707183;">)</span>
+<span style="color: #BA36A5;">tb2</span> = table<span style="color: #707183;">(</span><span style="color: #7388D6;">{</span><span style="color: #008000;">'b'</span>: <span style="color: #909183;">(</span><span style="color: #D0372D;">2</span>,<span style="color: #D0372D;">2</span><span style="color: #909183;">)</span><span style="color: #7388D6;">}</span>, nb=<span style="color: #D0372D;">2</span><span style="color: #707183;">)</span>
+<span style="color: #0000FF;">for</span> tp <span style="color: #0000FF;">in</span> produit_cartesien<span style="color: #707183;">(</span>tb1,tb2<span style="color: #707183;">)</span>:
+    <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>tp<span style="color: #707183;">)</span>
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>Combien de tuples auriez-vous du obtenir ?
+</li>
+<li>À votre avis, quel est le problème ?
+</li>
+</ul>
+</div>
+</li>
+
+
+
+<li><a id="sec-3-2-1-4" name="sec-3-2-1-4"></a>Implémentation du produit cartésien à partir de tables contenues dans des fichiers<br ><div class="outline-text-5" id="text-3-2-1-4">
+<p>
+Implémentez la fonction suivante pour des tables contenues dans des
+fichiers en évitant le problème observé dans la partie précédente.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">produit_cartesien_fichier</span><span style="color: #707183;">(</span>fichier1, fichier2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Construit le flux de tuples obtenus en appariant tous les tuples contenus</span>
+<span style="color: #036A07;">    dans les fichiers ~fichier1~ et ~fichier2~.</span>
+
+<span style="color: #036A07;">    Ce flux correspond au produit cart&#233;sien des deux tables contenues dans les</span>
+<span style="color: #036A07;">    fichiers produit par l'algorithme double boucle :</span>
+<span style="color: #036A07;">    - la table contenue dans ~fichier1~ est utilis&#233;e dans la boucle ext&#233;rieure,</span>
+<span style="color: #036A07;">    - la table contenue dans ~fichier2~ est la table utilis&#233;e dans la boucle int&#233;rieure.</span>
+
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+
+<p>
+Exécutez le code ci-dessous pour vérifier que vous obtenez le bon
+comportement.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #BA36A5;">tb</span> = <span style="color: #707183;">[</span>table<span style="color: #7388D6;">(</span><span style="color: #909183;">{</span><span style="color: #008000;">'a'</span>: <span style="color: #709870;">(</span><span style="color: #D0372D;">1</span>,<span style="color: #D0372D;">1</span><span style="color: #709870;">)</span><span style="color: #909183;">}</span>, nb=<span style="color: #D0372D;">2</span><span style="color: #7388D6;">)</span>, table<span style="color: #7388D6;">(</span><span style="color: #909183;">{</span><span style="color: #008000;">'b'</span>: <span style="color: #709870;">(</span><span style="color: #D0372D;">2</span>,<span style="color: #D0372D;">2</span><span style="color: #709870;">)</span><span style="color: #909183;">}</span>, nb=<span style="color: #D0372D;">2</span><span style="color: #7388D6;">)</span><span style="color: #707183;">]</span>
+<span style="color: #BA36A5;">fichiers</span> = <span style="color: #707183;">[</span><span style="color: #008000;">"/tmp/tb1.table"</span>, <span style="color: #008000;">"/tmp/tb2.table"</span><span style="color: #707183;">]</span>
+<span style="color: #0000FF;">for</span> i <span style="color: #0000FF;">in</span> <span style="color: #006FE0;">range</span><span style="color: #707183;">(</span><span style="color: #D0372D;">2</span><span style="color: #707183;">)</span>: mem_sur_disque<span style="color: #707183;">(</span>tb<span style="color: #7388D6;">[</span>i<span style="color: #7388D6;">]</span>, fichiers<span style="color: #7388D6;">[</span>i<span style="color: #7388D6;">]</span><span style="color: #707183;">)</span>
+<span style="color: #0000FF;">for</span> tp <span style="color: #0000FF;">in</span> produit_cartesien_fichier<span style="color: #707183;">(</span>fichiers<span style="color: #7388D6;">[</span><span style="color: #D0372D;">0</span><span style="color: #7388D6;">]</span>,fichiers<span style="color: #7388D6;">[</span><span style="color: #D0372D;">1</span><span style="color: #7388D6;">]</span><span style="color: #707183;">)</span>: <span style="color: #0000FF;">print</span><span style="color: #707183;">(</span>tp<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</li></ol>
+</div>
+
+<div id="outline-container-sec-3-2-2" class="outline-4">
+<h4 id="sec-3-2-2"><span class="section-number-4">3.2.2</span> La jointure</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<p>
+Nous allons maintenant implémenter quelques-uns des nombreux algorithmes de
+jointure. Après notre expérience avec les produits cartésiens, nous allons
+systématiquement utiliser des tables stockées sur disque pour calculer les
+jointures.
+</p>
+</div>
+<ol class="org-ol"><li><a id="sec-3-2-2-1" name="sec-3-2-2-1"></a>Jointure theta<br ><div class="outline-text-5" id="text-3-2-2-1">
+<p>
+Nous allons ici utiliser les fonctions <code>selection</code> et
+<code>produit_cartesien_fichier</code> pour calculer la <i>jointure theta</i>. Il s'agit de
+récupérer le flux des tuples de produit cartésien satisfaisant une certaine
+propriété.
+</p>
+
+<p>
+Complétez le code ci-dessous :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">jointure_theta</span><span style="color: #707183;">(</span>fichier1, fichier2, pred<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie le flux des appariements de tuples contenus dans les tables des</span>
+<span style="color: #036A07;">    fichiers ~fichier1~ et ~fichier2~" qui satisfont la propri&#233;t&#233; du pr&#233;dicat</span>
+<span style="color: #036A07;">    ~pred~ (fonction des tuples dans les bool&#233;ens)."""</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-3-2-2-2" name="sec-3-2-2-2"></a>Jointure naturelle double boucle<br ><div class="outline-text-5" id="text-3-2-2-2">
+<p>
+La jointure naturelle consiste à n'apparier que les tuples qui associent
+les mêmes valeurs à leurs attributs communs. En <code class="verbatim">sql</code>, cela correspond aux
+requêtes de la forme :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> * <span style="color: #0000FF;">FROM</span> table1 <span style="color: #0000FF;">NATURAL</span> <span style="color: #0000FF;">JOIN</span> table2;
+</pre>
+</div>
+
+<p>
+Complétez le code-ci-dessous :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">jointure_naturelle</span><span style="color: #707183;">(</span>fichier1, fichier2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie le flux des tuples de la jointure naturelle des tables contenues</span>
+<span style="color: #036A07;">    dans ~fichier1~ et ~fichier2~.</span>
+
+<span style="color: #036A07;">    Il s'agit des appariements des tuples provenant des tables contenues dans</span>
+<span style="color: #036A07;">    ~fichier1~et ~fichier2~ qui associent les m&#234;mes valeurs &#224; leurs attributs</span>
+<span style="color: #036A07;">    communs.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-3-2-2-3" name="sec-3-2-2-3"></a>Jointure naturelle/theta double boucle avec une (petite) table en mémoire<br ><div class="outline-text-5" id="text-3-2-2-3">
+<p>
+Lors de l'exécution de l'algorithme double boucle, l'une des tables n'est
+lue qu'une seule fois alors que la seconde est lue plusieurs fois. Quelle
+est la table qui est lue plusieurs fois :
+</p>
+<ol class="org-ol">
+<li>La table parcourue dans la boucle extérieure ?
+</li>
+<li>La table parcourue dans la boucle intérieure ?
+</li>
+</ol>
+
+<p>
+Lorsque l'une des deux tables est suffisamment petite pour tenir en
+mémoire, il peut être plus efficace de la charger en mémoire. À votre avis,
+pour limiter le nombre d'accès au disque dur, quelle table vaut-il mieux
+charger en mémoire ?
+</p>
+<ol class="org-ol">
+<li>La table parcourue par la boucle extérieure ?
+</li>
+<li>La table parcourue par la boucle intérieure ?
+</li>
+</ol>
+
+<p>
+Nous allons utiliser cette idée pour implémenter l'algorithme double boucle
+en chargeant l'une des deux tables en mémoire. Complétez le code
+ci-dessous. Vous modifierez également la documentation pour préciser quel
+fichier est chargé en mémoire.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">jointure_naturelle_mem</span><span style="color: #707183;">(</span>fichier1, fichier2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie le flux des tuples de la jointure naturelle des tables contenues</span>
+<span style="color: #036A07;">    dans ~fichier1~ et ~fichier2~.</span>
+
+<span style="color: #036A07;">    L'un des deux fichiers est charg&#233; en m&#233;moire afin qu'il ne soit lu qu'une</span>
+<span style="color: #036A07;">    seule fois.</span>
+
+<span style="color: #036A07;">    Il s'agit des appariements des tuples provenant des tables contenues dans</span>
+<span style="color: #036A07;">    ~fichier1~et ~fichier2~ qui associent les m&#234;mes valeurs &#224; leurs attributs</span>
+<span style="color: #036A07;">    communs.</span>
+
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-3-2-2-4" name="sec-3-2-2-4"></a>La jointure avec une table indexée<br ><div class="outline-text-5" id="text-3-2-2-4">
+<p>
+Nous allons maintenant nous intéresser à un type particulier de jointure.
+Des jointures qui se font avec la condition que deux attributs des tables à
+joindre aient la même valeur. Il s'agit de requêtes de la forme :
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sqlite"><span style="color: #0000FF;">SELECT</span> * <span style="color: #0000FF;">FROM</span> table1 <span style="color: #0000FF;">JOIN</span> table2 <span style="color: #0000FF;">ON</span> table1.A = table2.B;
+</pre>
+</div>
+
+<p>
+Pour cette partie nous adoptons les hypothèses suivantes :
+</p>
+<ol class="org-ol">
+<li>pour simplifier, les deux tables utilisées n'ont pas
+d'attributs en commun.
+</li>
+<li>la colonne <code>B</code> de <code>table2</code> est indexée.
+</li>
+</ol>
+
+
+<p>
+Afin de profiter de l'indexation de <code>table2</code>, nous pouvons parcourir
+<code>table1</code> et pour chaque tuple chercher dans l'index les adresses physiques
+des tuples de <code>table2</code> qui peuvent s'apparier avec ce tuple.
+</p>
+
+<p>
+En utilisant l'idée que nous venons d'esquisser, compléter la fonction
+ci-dessous. Pour rappel :
+</p>
+<ul class="org-ul">
+<li>si <code>index</code> est un index pour la colonne <code>col</code> de la table contenue dans
+<code>fichier</code> et <code>k</code> est une clé de l'index, alors <code>index[k]</code> est la liste
+des adresses dans <code>fichier</code> des tuples qui à <code>col</code> associent la valeur <code>k</code>.
+</li>
+<li><code>trouve_sur_disque(fichier, adr)</code> renvoie le flux des tuples de <code>fichier</code>
+aux adresses contenues dans <code>adr</code>.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">jointure_index</span><span style="color: #707183;">(</span>table1, col1, fichier2, index<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie le flux des tuples de la jointure de la ~table1~ et de la table</span>
+<span style="color: #036A07;">    contenue dans ~fichier2~ sous la condition que les valeurs de l'attribut</span>
+<span style="color: #036A07;">    ~col1~ de ~table1~ soient identiques aux valeurs de l'attribut ~col2~ la</span>
+<span style="color: #036A07;">    table de ~fichier2~.</span>
+
+<span style="color: #036A07;">    ~index~ est un index de l'attribut ~col2~ dans ~fichier2~.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+
+<p>
+<b>NB :</b> cet algorithme pourrait assez facilement se généraliser pour les
+ jointure theta dans lesquelles l'une des conditions est l'égalité des
+ valeurs des attributs <code>A</code> et <code>B</code>.
+</p>
+</div>
+</li>
+<li><a id="sec-3-2-2-5" name="sec-3-2-2-5"></a>La jointure avec deux tables indexées<br ><div class="outline-text-5" id="text-3-2-2-5">
+<p>
+Ici nous cherchons à résoudre la même requête que dans la question
+précédente avec l'hypothèse supplémentaire que nous disposons d'un index
+pour l'attribut <code>A</code> de <code>table1</code>. Au lieu de parcourir les tables, nous
+allons parcourir les deux index pour calculer la jointure.
+</p>
+
+<p>
+Compléter la fonction ci-dessous :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">jointure_double_index</span><span style="color: #707183;">(</span>fichier1, index1, fichier2, index2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie le flux de tuples obtenue par la jointure des tables contenues dans</span>
+<span style="color: #036A07;">     ~fichier1~ et ~fichier2~ avec la condition que les valeurs index&#233;es par</span>
+<span style="color: #036A07;">     ~index1~ pour ~table1~ soient &#233;gaux aux valeurs index&#233;es par ~index2~ pour</span>
+<span style="color: #036A07;">     ~table2~."""</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</li>
+
+<li><a id="sec-3-2-2-6" name="sec-3-2-2-6"></a>La jointure par fusion de flux triés<br ><div class="outline-text-5" id="text-3-2-2-6">
+<p>
+Nous poursuivons encore avec la même requête, mais cette fois, au lieu de
+supposer que nous disposons d'index pour les attributs sur lesquels porte
+la condition d'égalité, nous supposons que les tables sont triées dans
+l'ordre croissant selon la valeur des attributs concernés.
+</p>
+
+<p>
+Lorsque deux tables sont triées par rapport aux attributs sur lesquels on
+effectue la jointure, celle-ci est plus simple à calculer. On peut en effet
+parcourir chacune des tables en progressant suivant les valeurs des
+tuples. En particulier, cela permet de ne parcourir chaque table qu'une
+seule fois. Cela nous permet d'implémenter cette méthode de jointure
+directement sur des flux et non plus depuis des fichiers.
+</p>
+
+<p>
+Voici une description de l'algorithme que nous allons implémenter :
+</p>
+<ol class="org-ol">
+<li>nous allons charger en mémoire tous les tuples en tête de <code>table1</code>
+qui associent la même valeur à l'attribut <code>A</code>,
+</li>
+<li>nous faisons de même pour les tuples en tête de <code>table2</code> qui associent
+la même valeur à l'attribut <code>B</code>,
+</li>
+<li>suivant la façon dont se comparent la valeur de l'attribut <code>A</code> commune aux tuples de
+<code>table1</code> en mémoire à celle de l'attribut <code>B</code> des tuples de <code>table2</code> en mémoire, nous
+produisons les appariements, ou nous continuons d'avancer dans l'une des
+tables.
+</li>
+</ol>
+
+
+<p>
+<b>NB</b> : faites bien attention à ne pas oublier de tuples pour calculer la
+jointure. En particulier, il faut que les premiers tuples ayant une valeur
+différente de celle des tuples mémorisés lors des étapes 1. et 2.
+participent bien à la jointure. Pensez bien à les conserver en mémoire.
+</p>
+
+
+
+<p>
+Complétez le code ci-dessous :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">jointure_triee</span><span style="color: #707183;">(</span>table1, col1, table2, col2<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Impl&#233;mente la jointure de ~table1~ et ~table2~ sous la condition que les</span>
+<span style="color: #036A07;">    valeurs de l'attribut ~col1~ de ~table1~ soient &#233;gales aux valeurs de</span>
+<span style="color: #036A07;">    l'attribut ~col2~ de ~table2~.</span>
+
+<span style="color: #036A07;">    On suppose que ~table1~ est tri&#233;e suivant les valeurs croissantes de ~col1</span>
+<span style="color: #036A07;">    et que ~table2~ est tri&#233;e suivant les valeurs croissantes de ~col2~.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">yield</span> <span style="color: #707183;">{}</span>
+</pre>
+</div>
+</div>
+</li></ol>
+</div>
+</div>
+
+<div id="outline-container-sec-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> L'agrégation</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+Dans cette partie, nous allons implémenter des fonctions qui permettent de
+calculer des agrégats simples et fréquemment utilisés dans des requêtes.
+</p>
+</div>
+
+<div id="outline-container-sec-3-3-1" class="outline-4">
+<h4 id="sec-3-3-1"><span class="section-number-4">3.3.1</span> Calcul du minimum</h4>
+<div class="outline-text-4" id="text-3-3-1">
+<p>
+Nous allons commencer par le calcul de la valeur minimum associée à un
+attribut dans une table.
+</p>
+
+<p>
+<b>Attention</b> : pour calculer ce minimum, vous devez utiliser une mémoire
+constante. Il ne faut pas que vous stockiez toutes les valeurs dans une
+liste puis que vous utilisiez une fonction <code class="verbatim">python</code> qui calcule le minimum de
+cette liste.
+</p>
+
+<p>
+Complétez la fonction suivante.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">minimum_table</span><span style="color: #707183;">(</span>table, col<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie la plus petite des valeurs associ&#233;es &#224; l'attribut ~col~ dans ~table~.</span>
+<span style="color: #036A07;">    Si ~table~ est vide, renvoie None.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">return</span> <span style="color: #D0372D;">None</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-3-2" class="outline-4">
+<h4 id="sec-3-3-2"><span class="section-number-4">3.3.2</span> Calcul de moyenne</h4>
+<div class="outline-text-4" id="text-3-3-2">
+<p>
+Nous allons calculer la moyenne des valeurs associées à un attribut d'une
+table.
+</p>
+
+<p>
+<b>Attention</b> : de nouveau, nous allons chercher à avoir une empreinte mémoire
+qui est indépendante de la taille de la table considérée. Pour cela, on
+pourra stocker les informations suivantes :
+</p>
+<ul class="org-ul">
+<li>la somme des valeurs des attributs des tuples déjà traités,
+</li>
+<li>le nombre des tuples déjà traités.
+</li>
+</ul>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">moyenne_table</span><span style="color: #707183;">(</span>table, col<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie la moyenne des valeurs que les tuples de ~table~ associent &#224;</span>
+<span style="color: #036A07;">    l'attribut ~col~.</span>
+<span style="color: #036A07;">    Si ~table~ est vide, renvoie None.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">return</span> <span style="color: #D0372D;">None</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-3-3" class="outline-4">
+<h4 id="sec-3-3-3"><span class="section-number-4">3.3.3</span> Calcul d'écart type</h4>
+<div class="outline-text-4" id="text-3-3-3">
+<p>
+Nous allons essayer d'appliquer la même méthode pour le calcul de
+l'écart-type des valeurs associées à un attribut d'une table.
+</p>
+
+<p>
+Pour rappel, si v<sub>1</sub>, &#x2026;, v<sub>n</sub> sont les valeurs dont on souhaite calculer
+l'écart-type, celui-ci vaut :
+</p>
+
+<p>
+\[\sqrt{\frac{1}{n} \sum_{i=1}^n (v_i - m)^2}\]
+</p>
+
+<p>
+si m est la moyenne des valeurs.
+</p>
+
+<p>
+Nous remarquons que:
+\[\sum_{i=1}^n (v_i - m)^2 = \sum_{i=1}^n (v_i^2 - 2v_i m  + m^2) =
+    \left(\sum_{i=1}^n v_i^2\right) -2 m\left(\sum_{i=1}^n v_i\right) + nm^2 =  \left(\sum_{i=1}^n v_i^2\right) - nm^2\]
+</p>
+
+<p>
+Ainsi en maintenant la somme des carrés des valeurs en plus des informations
+utilisées pour le calcul de la moyenne, il est possible de calculer l'écart
+type en utilisant une mémoire bornée.
+</p>
+
+<p>
+Complétez la fonction suivante :
+</p>
+<div class="org-src-container">
+
+<pre class="src src-python"><span style="color: #0000FF;">def</span> <span style="color: #006699;">ecart_type_table</span><span style="color: #707183;">(</span>table, col<span style="color: #707183;">)</span>:
+    <span style="color: #036A07;">"""Renvoie l'&#233;cart type des valeurs que les tuples de ~table~ associent &#224;</span>
+<span style="color: #036A07;">    l'attribut ~col~.</span>
+<span style="color: #036A07;">    Si ~table~ est vide, renvoie None.</span>
+<span style="color: #036A07;">    """</span>
+    <span style="color: #0000FF;">return</span> <span style="color: #D0372D;">None</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div></div>
+</body>
+</html>
