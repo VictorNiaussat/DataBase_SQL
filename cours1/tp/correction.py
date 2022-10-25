@@ -56,7 +56,14 @@ def projection(table, champs):
     Renvoie une exception si un attribut de ~champs~ n'est pas un attribut des
     tuples de ~table~.
     """
-    yield {}
+    for item in table:
+        res={}
+        for c in champs:
+            try:
+                res[c] = item[c]
+            except:
+                raise KeyError
+        yield res
 
 def exemple_projection():
     """Exemple d'utilisation de la projection."""
@@ -68,7 +75,10 @@ def exemple_projection():
 def transformation(table, f):
     """Renvoie un flux obtenu en appliquant ~f~ à chacun des tuples composant
 ~table~."""
-    yield {}
+    for item in table:
+        res={}
+        res=f(item)
+        yield res
 
 def exemple_transformation():
     schema = {'a': (1, 10), 'b': (40, 100), 'c': (20,30)}
