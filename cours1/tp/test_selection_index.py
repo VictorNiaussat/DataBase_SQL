@@ -10,7 +10,7 @@ class test_selection_index(unittest.TestCase):
     def test_selection_index_flux(self):
         schema = {'a' : (0,10), 'b' : (1,10000000)}
         tbl = table(schema, nb=10)
-        fichier = "/tmp/tbl.table"
+        fichier = "tmp/tbl.table"
         mem_sur_disque(tbl, fichier)
         idx = index_fichier(fichier, 'a')
         sel = selection_index(fichier, idx, [0, 1, 2])
@@ -23,7 +23,7 @@ class test_selection_index(unittest.TestCase):
                {"a": 5, "b": 2, "c": 2},
                {"a": 1, "b": 8, "c": 4},
                {"a": 5, "b": 1, "c": 3}]
-        fichier = "/tmp/tbl.table"
+        fichier = "tmp/tbl.table"
         mem_sur_disque(tbl, fichier)
         idx = index_fichier(fichier, 'b')
         sel = selection_index(fichier, idx, [1, 2])

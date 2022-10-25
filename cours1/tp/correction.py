@@ -96,11 +96,26 @@ def projection2(table, champs):
     Renvoie une erreur si un attribut de ~champs~ n'est pas un attribut des
     tuples de ~table~.
     """
-    yield {}
+    def projection_dic(item):
+        res={}
+        for c in champs:
+            try:
+                res[c] = item[c]
+            except:
+                raise KeyError
+        return res
+    
+    return transformation(table,projection_dic)
+    
+    
 
 def union(t1, t2):
     """Construit un flux qui énumère les éléments de ~t1~ puis ceux de ~t2~."""
-    yield {}
+    for item1 in t1:
+        yield item1        
+    for item2 in t2:
+        yield item2  
+
 
 def exemple_union():
     """Exemple d'utilisation de la fonction union."""
@@ -114,7 +129,9 @@ def exemple_union():
 def selection(table, pred):
     """Construit le flux des éléments de ~table~ qui satisfont le prédicat
        ~pred~ (fonction des tuples dans les booléens)."""
-    yield {}
+    for item in table:
+        if pred(item):
+            yield item    
 
 def exemple_selection():
     for un_tuple in selection(table({'a': (30, 100), 'b': (10, 50)}, nb=10),
@@ -129,8 +146,15 @@ def selection_index(fichier, idx, valeurs) :
 
     Attention : si un élément de ~valeurs~ n'est pas référencé dans ~idx~, on
     souhaite qu'il n'y ait pas d'erreur.
-    """
-    yield {}
+    """                                      
+    for v in valeurs:  
+        try:                         
+            b = trouve_sur_disque(fichier,idx[v])
+            for res in b:
+                yield res
+        except:
+            raise KeyError
+        
 
 def appariement(t1, t2):
     """Renvoie un tuple ayant pour clé les clés de ~t1~ et de ~t2~.
@@ -141,7 +165,10 @@ def appariement(t1, t2):
     À une clé qui apparaît dans les deux tuples, le résultat associe la valeur
     que lui associe ~t2~.
     """
-    return {}
+    res = t1
+    for item,value in t2.items():
+        res[item] = value   
+    return res
 
 def produit_cartesien(table1, table2):
     """Construit le flux de tuples obtenus en appariant tous les tuples de
@@ -151,7 +178,10 @@ def produit_cartesien(table1, table2):
     - ~table1~ est la table utilisée dans le boucle extérieure,
     - ~table2~ est la table utilisée dans la boucle intérieure.
     """
-    yield {}
+    
+    for item1 in table1:
+        for item2 in table2:
+           yield appariement(item1,item2)
 
 def produit_cartesien_fichier(fichier1, fichier2):
     """Construit le flux de tuples obtenus en appariant tous les tuples contenus
@@ -163,13 +193,18 @@ def produit_cartesien_fichier(fichier1, fichier2):
     - la table contenue dans ~fichier2~ est la table utilisée dans la boucle intérieure.
 
     """
-    yield {}
+    table1 = lire_sur_disque(fichier1)
+    for item1 in table1:
+        table2 = lire_sur_disque(fichier2)
+        for item2 in table2:
+            yield appariement(item1,item2)
 
 def jointure_theta(fichier1, fichier2, pred):
     """Renvoie le flux des appariements de tuples contenus dans les tables des
     fichiers ~fichier1~ et ~fichier2~" qui satisfont la propriété du prédicat
     ~pred~ (fonction des tuples dans les booléens)."""
-    yield {}
+    produit_table = produit_cartesien_fichier(fichier1,fichier2)
+    yield from selection(produit_table,pred)
 
 def jointure_naturelle(fichier1, fichier2):
     """Renvoie le flux des tuples de la jointure naturelle des tables contenues
